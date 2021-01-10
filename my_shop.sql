@@ -5,79 +5,78 @@ USE my_shop;
 
 -- create the tables for the database
 CREATE TABLE addresses (
-  addressID         INT            NOT NULL   	AUTO_INCREMENT,
-  customerID        INT            NOT NULL,
-  city              VARCHAR(40)    NOT NULL,
-  phone             VARCHAR(12)    NOT NULL,
-  shipAddress 	    VARCHAR(255)   NOT NULL,
-  PRIMARY KEY (addressID),
-  INDEX customerID (customerID)
+  address_id                    INT                 NOT NULL   	     AUTO_INCREMENT,
+  user_id	                      INT                 NOT NULL,
+  city                          VARCHAR(40)         NOT NULL,
+  phone                         VARCHAR(12)         NOT NULL,
+  PRIMARY KEY (address_id),
+  INDEX customerID (user_id)
 );
 
-CREATE TABLE administrators (
-  adminID           INT            NOT NULL   	AUTO_INCREMENT,
-  emailAddress      VARCHAR(255)   NOT NULL,
-  password          VARCHAR(255)   NOT NULL,
-  firstName         VARCHAR(255)   NOT NULL,
-  lastName          VARCHAR(255)   NOT NULL,
-  PRIMARY KEY (adminID)
+CREATE TABLE roles(
+  role_id 			                INT 		            NOT NULL	       AUTO_INCREMENT,
+  role_name 		                VARCHAR(255)	      NOT NULL,
+  PRIMARY KEY (role_id),
+  UNIQUE INDEX role_name (role_name)
+);
+
+CREATE TABLE users (
+  user_id                       INT                 NOT NULL   	     AUTO_INCREMENT,
+  role_id 			                INT 		            NOT NULL,
+  firstName                     VARCHAR(255)        NOT NULL,
+  lastName                      VARCHAR(255)        NOT NULL,
+  phone 			                  VARCHAR(255)        NOT NULL,
+  email 	                      VARCHAR(255)        NOT NULL,
+  password                      VARCHAR(255)        NOT NULL,
+  PRIMARY KEY (user_id),
+  UNIQUE INDEX email (email),
+  INDEX role_id (role_id)
 );
 
 CREATE TABLE categories (
-  categoryID        INT            NOT NULL   	AUTO_INCREMENT,
-  categoryName      VARCHAR(255)   NOT NULL,
-  PRIMARY KEY (categoryID)
+  category_id                   INT                 NOT NULL   	     AUTO_INCREMENT,
+  category_name                 VARCHAR(255)        NOT NULL,
+  PRIMARY KEY (category_id)
 );
 
-CREATE TABLE customers (
-  customerID        INT            NOT NULL   	AUTO_INCREMENT,
-  emailAddress      VARCHAR(255)   NOT NULL,
-  password          VARCHAR(60)    NOT NULL,
-  firstName         VARCHAR(60)    NOT NULL,
-  lastName          VARCHAR(60)    NOT NULL,
-  shipAddress 	    VARCHAR(255) 	   	DEFAULT NULL,
-  PRIMARY KEY (customerID),
-  UNIQUE INDEX emailAddress (emailAddress)
-);
-
-CREATE TABLE orderitems (
-  itemID            INT            NOT NULL   	AUTO_INCREMENT,
-  orderID           INT            NOT NULL,
-  productID         INT            NOT NULL,
-  quantity          INT 	   NOT NULL,
-  PRIMARY KEY (itemID), 
-  INDEX orderID (orderID), 
-  INDEX productID (productID)
+CREATE TABLE order_details (
+  order_detail_id               INT                 NOT NULL   	     AUTO_INCREMENT,
+  order_id                      INT                 NOT NULL,
+  product_id                    INT                 NOT NULL,
+  quantity                      INT 	              NOT NULL,
+  status 			                  INT 		            NOT NULL,
+  PRIMARY KEY (order_detail_id), 
+  INDEX order_id (order_id), 
+  INDEX product_id (product_id)
 );
 
 CREATE TABLE orders (
-  orderID           INT            NOT NULL   	AUTO_INCREMENT,
-  customerID        INT            NOT NULL,
-  orderDate         DATETIME       NOT NULL,
-  shipDate          DATETIME                  	DEFAULT NULL,
-  name 	    	    VARCHAR(255)   NOT NULL,
-  phone 	    VARCHAR(12)    NOT NULL,
-  shipAddress       VARCHAR(255)   NOT NULL,
-  PRIMARY KEY (orderID), 
-  INDEX customerID (customerID)
+  order_id                      INT                 NOT NULL   	    AUTO_INCREMENT,
+  user_id                       INT                 NOT NULL,
+  order_date                    DATETIME            NOT NULL,
+  name 	    	                  VARCHAR(255)        NOT NULL,
+  phone 	    	                VARCHAR(12)         NOT NULL,
+  address       	              VARCHAR(255)        NOT NULL,
+  PRIMARY KEY (order_id), 
+  INDEX user_id (user_id)
 );
 
 CREATE TABLE products (
-  productID         INT            NOT NULL   AUTO_INCREMENT,
-  categoryID        INT            NOT NULL,
-  productCode       VARCHAR(10)    NOT NULL,
-  productName       VARCHAR(255)   NOT NULL,
-  description       TEXT           NOT NULL,
-  listPrice         DECIMAL(10,2)  NOT NULL,
-  dateAdded         DATETIME       NOT NULL,
-  image             blob 	   NOT NULL,
-  PRIMARY KEY (productID), 
-  INDEX categoryID (categoryID), 
-  UNIQUE INDEX productCode (productCode)
+  product_id         	          INT            	    NOT NULL        AUTO_INCREMENT,
+  category_id        	          INT            	    NOT NULL,
+  product_code       	          VARCHAR(10)    	    NOT NULL,
+  product_name       	          VARCHAR(255)   	    NOT NULL,
+  description       	          TEXT           	    NOT NULL,
+  price         		            DECIMAL(10,2)  	    NOT NULL,
+  date_added        	          DATETIME       	    NOT NULL,
+  image             	          blob 	   		        NOT NULL,
+  PRIMARY KEY (product_id), 
+  INDEX category_id (category_id), 
+  UNIQUE INDEX product_code (product_code)
 );
 
 -- Insert data into the tables
-INSERT INTO products (productID, categoryID, productCode, productName, description, listPrice, dateAdded, image) VALUES
+INSERT INTO products (product_id, category_id, product_code, product_name, description, price, date_added, image) VALUES
 (1,  1, 'KEN-001', 'Kenzo -  Embroidered Black', 'Embroidered cotton T-shirt If you want to make a statement and warn anyone against getting on your bad side, Kenzo\'s T-shirt is just the ticket. It looks pretty cool too. The model is also styled with: Versace Chain Reaction sneakers, Marine Serre Moire track pants, Maison Margiela 4-stitches crossbody bag, Off-White arrow print face mask. Let us handle the legwork. \r\n\r\nDelivery duties are included in the item price when shipping to all EU countries plus The United Kingdom, USA, Canada, China Mainland, Australia, New Zealand, Israel, Puerto Rico, Switzerland, Singapore, Republic Of Korea, Kuwait, Mexico, Qatar, India, Norway, Saudi Arabia, Taiwan Region, Thailand, U.A.E., Japan, Brazil, Guernsey, Isle of Man, San Marino, Colombia, Lebanon, Hong Kong SAR, the Canary Islands and Bahrain. All import duties are included in your order – the price you see is the price you pay.\r\n( Black\r\n- Cotton \r\n- Crew neck\r\n- Embroidered logo\rn- Short sleeves )', '300.00', '2020-11-01 02:13:00', 0x4b656e7a6f202d20456d62726f69646572656420243138332e6a7067),
 (2,  1, 'KEN-002', 'Kenzo - Tiger motif short - sleeved', 'Tiger motif short-sleeved T-shirt You know what they say; sun\'s out guns out. This short-sleeved T-shirt by Kenzo, punctuated with the brand\'s signature tiger motif, is the perfect opportunity to show off your impressive work at the gym. Nice biceps.\r\nLet us handle the legwork. Delivery duties are included in the item price when shipping to all EU countries plus The United Kingdom, USA, Canada, China Mainland, Australia, New Zealand, Israel, Puerto Rico, Switzerland, Singapore, Republic Of Korea, Kuwait, Mexico, Qatar, India, Norway, Saudi Arabia, Taiwan Region, Thailand, U.A.E., Japan,  Colombia, Lebanon, Hong Kong SAR, the Canary Islands and Bahrain. All import duties are included in your order – the price you see is the price you pay. ( Yale-blue\r\n- Cotton and viscose-blend\r\n- Round neck\r\n- Signature Tiger motif\r\n- Short sleeves\r\n- Straight hem )', '325.00', '2020-11-02 21:32:00', 0x4b656e7a6f202d2054696765722e6a7067),
 (3,  1, 'KEN-003', 'Kenzo - Horse print short - sleeved', 'Horse print short-sleeved T-shirt Don\'t be a neigh-sayer. Boasting a soft cotton construction, this statement horse-print T-shirt from Kenzo will inject some equestrian-themed style into your daytime wardrobe. Ride on. Let us handle the legwork. Delivery duties are included in the item price when shipping to all EU countries plus The United Kingdom, USA, Canada, China Mainland, Australia, New Zealand, Israel, Puerto Rico, Switzerland, Singapore, Republic Of Korea, Kuwait, Mexico, Qatar, India, Norway, Saudi Arabia, Taiwan Region, Thailand, U.A.E., Japan, Colombia, Lebanon, Hong Kong SAR, the Canary Islands and Bahrain. All import duties are included in your order – the price you see is the price you pay. ( Black - Cotton - Round neck - Horse print - Short sleeves - Straight hem )', '350.00', '2020-11-03 21:33:00', 0x4b656e7a6f202d20486f7273652e6a7067),
@@ -90,27 +89,4 @@ INSERT INTO products (productID, categoryID, productCode, productName, descripti
 (10, 2, 'DOL-004', 'Dolce & Gabbana - Heritage print',    'Heritage print T-shirt You can\'t beat a classic T-shirt. This black and white cotton T-shirt from Dolce & Gabbana boasts a heritage print and round neck. Make a statement. Featuring a round neck and short sleeves. Let us handle the legwork. Delivery duties are included in the item price when shipping to all EU countries plus The United Kingdom, USA, Canada, China Mainland, Australia, New Zealand, Israel, Puerto Rico, Switzerland, Singapore, Republic Of Korea, Kuwait, Mexico, Qatar, India, Norway, Saudi Arabia, Taiwan Region, Thailand, U.A.E., Japan, Colombia, Lebanon, Hong Kong SAR, the Canary Islands and Bahrain. All import duties are included in your order – the price you see is the price you pay.', '328.00', '2020-11-10 02:55:00', 0x446f6c636520242047616262616e61202d2068657269746167652e6a7067),
 (11, 2, 'DOL-005', 'Dolce & Gabbana - Tailor polo',       'Tailor-print polo shirt It\'s time to show off that polo shirt. Made from cotton and boasting a signature tailor-print on its entirety, this Dolce & Gabbana piece will surely make an impression when you step foot into the world. Props to you.	Let us handle the legwork. Delivery duties are included in the item price when shipping to all EU countries plus The United Kingdom, USA, Canada, China Mainland, Australia, New Zealand, Israel, Puerto Rico, Switzerland, Singapore, Republic Of Korea, Kuwait, Mexico, Qatar, India, Norway, Saudi Arabia, Taiwan Region, Thailand, U.A.E., Japan, Colombia, Lebanon, Hong Kong SAR, the Canary Islands and Bahrain. All import duties are included in your order – the price you see is the price you pay. multicolour\r\n( Cotton\r\n- Graphic tailor-print\r\n- Polo collar\r\n- Front button placket\r\n- Short sleeves - Straight hem )', '611.00', '2020-11-11 03:03:00', 0x446f6c636520242047616262616e61207461696c6f722e6a7067),
 (12, 2, 'DOL-006', 'Dolce & Gabbana - Embroidered White', 'Embroidered White. There are two letters that can\'t help but make us go weak at the knees. D and G. Handy then, that they are the exact same letters embroidered on this white cotton Dolce & Gabbana T-shirt. What are the chances. Featuring a round neck, short sleeves, an embroidered logo to the chest, a straight hem and a relaxed shape. Let us handle the legwork. Delivery duties are included in the item price when shipping to all EU countries plus The United Kingdom, USA, Canada, China Mainland, Australia, New Zealand, Israel, Puerto Rico, Switzerland, Singapore, Republic Of Korea, Kuwait, Mexico, Qatar, India, Norway, Saudi Arabia, Taiwan Region, Thailand, U.A.E., Japan, Colombia, Lebanon, Hong Kong SAR, the Canary Islands and Bahrain. All import duties are included in your order – the price you see is the price you pay.', '328.00', '2020-11-12 03:05:00', 0x446f6c636520242047616262616e61202d20656d62726f696465726564202d20626c616e6b2e6a7067);
-
-INSERT INTO orders (orderID, customerID, orderDate, shipDate, name, phone, shipAddress) VALUES
-(1, 1, '2020-11-01 16:05:00', '2020-11-03 16:05:00', 'Thi', '0935560935', 'H73/06, K356 Hoàng Diệu'),
-(2, 2, '2020-11-07 16:50:00', '2020-11-08 16:50:00', 'Loc', '0935560935', '93 Hàm Ng93'),
-(3, 3, '2020-11-07 16:51:00', '2020-11-09 16:51:00', 'Thanh', '0914242411', '185 Nguyễn Tri Phương'),
-(4, 4, '2020-11-12 17:02:00', '2020-11-15 17:02:00', 'Thắng', '09127873439', '216 Đặng Thai Mai'),
-(5, 5, '2020-11-08 17:05:00', '2020-11-10 17:05:00', 'Nhi', '0923232358', '81 Nguyễn Công Trứ');
-
-INSERT INTO orderitems (itemID, orderID, productID, quantity) VALUES
-(1, 1, 1, 2);
-
-INSERT INTO customers (customerID, emailAddress, password, firstName, lastName, shipAddress) VALUES
-(1, 'Tranquynhthi1999@gmail.com', '25f9e794323b453885f5181f1b624d0b', 'Thi', 'Tran', 'H73/06, K356 Hoàng Diệu');
-
-INSERT INTO administrators (adminID, emailAddress, password, firstName, lastName) VALUES
-(2, 'Tranquynhthi1999@gmail.com', '25f9e794323b453885f5181f1b624d0b', 'Thi', 'Tran');
-
-INSERT INTO addresses (addressID, customerID, city, phone, shipAddress) VALUES
-(1, 1, 'Đà Nẵng', '0935568114', 'H73/06, K356 Hoàng Diệu');
-
-
-
-
 
